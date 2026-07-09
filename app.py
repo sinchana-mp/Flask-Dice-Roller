@@ -1,23 +1,26 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
 
+tasks = []
+
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html", tasks=tasks)
 
 
-@app.route("/submit", methods=["POST"])
-def submit():
-    name = request.form["name"]
-    email = request.form["email"]
-    message = request.form["message"]
+@app.route("/add", methods=["POST"])
+def add_task():
+    task = request.form["task"]
+    tasks.append(task)
+    return redirect("/")
 
-    return f"""
-    <h1>Thank You {name}!</h1>
-    <p>Your email: {email}</p>
-    <p>Your message: {message}</p>
-    """
-    
+
+@app.route("/delete/<int:index>")
+def delete_task(index):
+    tasks.pop(index)
+    return redirect("/")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
